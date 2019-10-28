@@ -7,6 +7,8 @@ from process import Process
 from resource import Resource
 from collections import deque
 
+VALID_PRIORITIES = [0,1,2]
+
 class Manager():
 
     def __init__(self):
@@ -37,7 +39,7 @@ class Manager():
         self.rl = {0: deque(), 1: deque(), 2: deque()} #### WHERE YOU LAST LEFT OFF 10.28.19 5:20 AM
 
         ## Creating Process 0 and placing it into Ready List
-        self.PCB[0] = Process(0, 1, 0)  ## Process(id/index, state, parent)
+        self.PCB[0] = Process(0, 0, 1, 0)  ## Process(id/index, state, parent)
 
         self.active_processes += 1
 
@@ -58,20 +60,32 @@ class Manager():
                 - put new Process in self.PCB
                 - append to ready list
         '''
+        if priority not in VALID_PRIORITIES:
+            return -1 #### Incorrect priority #
+        
         index = 0
         for p in range(0,len(self.PCB)):
             if self.PCB[p] == None:
-                new_process = self.run_proc.create_process(index)
+                new_process = Process(index, priority, 1, self.run_proc.id) ######### ADD PRIORITY AS AN ARGUMENT #########
 
                 self.PCB[p] = new_process
 
                 self.ready_list.append(index)
+
+                ## self.rl[priority].append(index)
 
                 self.run_proc.add_child(index)
                 
                 print("Process ", index, " created from ", self.run_proc.id) #, " {}".format(list(self.ready_list)))
                 ##print(self.PCB)
                 print(list(self.ready_list))
+
+                # if priority > self.run_proc.priority:
+                #   scheduler()
+                #
+                #  OR
+                #
+                # scheduler()
                 self.active_processes += 1
                 return index
 
@@ -126,6 +140,7 @@ class Manager():
                         #print("a: ", self.ready_list)
                         #print(resource)
                         self.PCB[head_of_waitlist].resources.append(r)
+                        ## self.scheduler()
                 except:
                     pass
             print("Resource {} released".format(r))
@@ -182,6 +197,7 @@ class Manager():
 #################################
 
     def request(self, resource, units):
+        
         if resource not in [0, 1, 2, 3]: return -1
 
         if self.run_proc.id == self.PCB[0].id: return -1 ## Process 0 can't req res.
@@ -211,15 +227,42 @@ class Manager():
         if resource in self.run_proc.resources:
             self.run_proc.resources.remove(resource)
 
+            ## restore units back to resource inventory
+
             if not self.RCB[resource].waitlist: ## empty
                 self.RCB[resource].state = 0
             else:
+
+##                ## FIND the highest-priority process that matches the units available for the resource
+##
+##                ## what happens when you release a resource but every process on the waitlist
+##                ## requests units higher than what's available?? is it marked as alloc?? 
+##
+##                # highest_proc = self.RCB[resource].waitlist.copy().popleft()
+##                # for p in self.RCB[resource].waitlist:                         # p will be a tuple!!!!!
+##                #       if self.PCB[p].priority > self.PCB[highest_proc].priority and p[1] == units:
+##                #           highest_proc = p
+##
+##                # we have to check if the high-priority process is on another waitlist
+##                # or later in line on the same waitlist
+##
+##                ## OR: CAN a process only be at max 1 waitlist bc it'll be blcoked and not on the RL???
+##    
+##
+##                wl_copy = self.RCB[resource].waitlist.copy()
+##                # for p in wl_copy:
+##                #   if p = highest_proc:
+##                #       self.RCB[resource].waitlist.re
+##                #       break
+                
                 head_of_waitlist = self.RCB[resource].waitlist.popleft()
                 try: ## in the event that the process doesn't exist
                     if head_of_waitlist in [p.id if p != None else -1 for p in self.PCB]:
                         self.PCB[head_of_waitlist].state = 1
                         self.ready_list.append(head_of_waitlist)
                         self.PCB[head_of_waitlist].resources.append(resource)
+                        ## self.scheduler()
+                        
                 except:
                     pass
             print("Resource {} released".format(resource))
@@ -242,6 +285,13 @@ class Manager():
         return True
 
     def scheduler(self):
+        ## 
+        ## for i,p in self.rl:
+        ##      if self.rl[i] not empty:
+        ##          new_proc = self.rl[i].popleft()
+        ##          break
+
+        ## self.run_proc = new_proc
         self.run_proc = self.PCB[self.ready_list[0]]
         print("Process {} running: ".format(self.run_proc.id))
         print(list(self.ready_list))

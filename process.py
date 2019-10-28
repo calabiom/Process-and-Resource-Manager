@@ -9,15 +9,15 @@ from collections import deque
 
 class Process():
 
-    def __init__(self, index, state, parent):
+    def __init__(self, index, priority, state, parent): ### ADD PRIORITY AS AN ARGUMENT #####
         self.id = index
         self.state = state
-        self.parent = parent        ## To be populated by parent process
-        #self.priority = priority
-        self.children = []    ## To be populated by self.
+        self.parent = parent        
+        self.priority = priority
+        self.children = []    
         self.resources = []
 
-    def create_process(self, index):
+    def create_process(self, index, priority): ### DO NOT NEED THIS ANYMORE
         '''Creates a new child process'''
         new_process = Process(index, 1, self.id)
 
