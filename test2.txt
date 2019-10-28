@@ -1,0 +1,91 @@
+in
+cr 1
+cr 1
+to
+to
+rq 3 1
+to
+rq 3 2
+to
+rl 3 2
+stat
+in
+cr 1
+cr 1
+cr 1
+cr 1
+to
+cr 1
+cr 1
+cr 1
+to
+cr 1
+to
+to
+to
+to
+cr 1
+cr 1
+rq 0 0
+to
+to
+to
+to
+rq 1 1
+to
+to
+to
+to
+rq 2 2
+to
+to
+to
+rq 1 1
+to
+to
+rq 0 0
+stat
+rl 1 1
+to
+to
+to
+to
+rl 2 2
+stat
+to
+to
+to
+to
+to
+rl 0 0
+to
+to
+to
+to
+to
+to
+rq 0 0
+rq 3 3
+to
+to
+rq 3 3
+to
+to
+rq 3 3
+to
+to
+stat
+to
+to
+to
+rq 2 2
+rq 1 1
+stat
+to
+to
+rq 1 1
+stat
+to
+to
+de 1
+stat
