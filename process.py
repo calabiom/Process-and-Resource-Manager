@@ -13,6 +13,7 @@ class Process():
         self.id = index
         self.state = state
         self.parent = parent        ## To be populated by parent process
+        #self.priority = priority
         self.children = []    ## To be populated by self.
         self.resources = []
 

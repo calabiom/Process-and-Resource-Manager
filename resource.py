@@ -9,7 +9,7 @@ from collections import deque
 
 class Resource():
 
-    def __init__(self, r_id, state, inventory):
+    def __init__(self, r_id, inventory, state):
         self.id = r_id
         self.state = state
         self.waitlist = deque()

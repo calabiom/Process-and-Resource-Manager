@@ -1,0 +1,290 @@
+in
+cr 0
+to
+rq 0 1
+cr 1
+rq 1 1
+rq 2 1
+cr 1
+to
+rq 1 1
+rq 0 1
+cr 1
+rq 3 3
+rq 2 2
+rq 3 1
+cr 1
+rq 3 3
+de 1
+cr 2
+cr 2
+cr 2
+cr 2
+cr 2
+to
+to
+to
+to
+
+in
+cr 1
+cr 1
+rq 2 1
+to
+cr 2
+rq 2 2
+to
+rq 1 1
+cr 1
+to
+to
+rq 3 3
+to
+rq 3 1
+to
+cr 1
+cr 1
+to
+to
+rq 0 1
+rq 3 2
+to
+to
+to
+to
+rl 3 1
+to
+to
+to
+de 4
+
+
+// CREATION TESTS
+
+// TEST 1: Init
+in
+
+// TEST 2: Timeout, only process 0
+in
+to
+
+// TEST 3: Create priority 0 process
+in
+cr 0
+
+// TEST 4: Create priority 1 process
+in
+cr 1
+
+// TEST 5: Timeout, priority 1 process single process
+in
+cr 1
+to
+
+// TEST 6: Create two priority 1 processes (second is child of first)
+in
+cr 1
+cr 1
+
+// TEST 7: Timeout test, priority 1 processes
+in
+cr 1
+cr 1
+to
+to
+
+// TEST 8: Create priority 2 process
+in
+cr 2
+
+// TEST 9: Timeout test, priority 2 processes
+in
+cr 2
+cr 2
+to
+to
+
+// TEST 10: Create pri 1 and pri 2 process
+in
+cr 1
+cr 2
+to
+
+// TEST 11: Create pri 2 and pri 1 process
+in
+cr 2
+cr 1
+to
+
+// TEST 12: Create out of range priorities
+in
+cr -1
+
+in
+cr 255
+
+// TEST 13: Create max num (17) processes
+in
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+cr 1
+
+// RESOURCE TESTS
+
+// REQUESTS
+
+// TEST 14: Process 0 requests resource
+in
+rq 0 1
+
+// TEST 15: Out of range resource request
+in
+cr 1
+rq -1 1
+
+in
+cr 1
+rq 100 1
+
+// TEST 16: Request resource 0
+in
+cr 1
+rq 0 1
+
+// TEST 17: Requesting more than inventory
+in
+cr 1
+rq 0 1
+rq 0 1
+
+// TEST 18: Blocking test same priority
+in
+cr 1
+rq 0 1
+cr 1
+to
+rq 0 1
+
+// TEST 19: Blocking test higher priority
+in
+cr 1
+rq 0 1
+cr 2
+rq 0 1
+
+// TEST 20: Correct inventory
+in
+cr 1
+rq 0 1
+rq 1 1
+rq 2 2
+rq 3 3
+rq 1 1
+
+// RELEASE TESTS
+
+// TEST 21: Releasing unowned resource
+in
+cr 1
+rl 0 1
+
+// TEST 22: Releasing owned resource
+in
+cr 1
+rq 0 1
+rl 0 1
+
+// TEST 23: Releasing too many resources
+in
+cr 1
+rq 2 1
+rl 2 2
+
+// TEST 24: Release and unblock
+in
+cr 1
+rq 0 1
+cr 2
+rq 0 1
+rl 0 1
+
+// TEST 25: Out of range release
+in
+cr 1
+rl -1 1
+
+in
+cr 1
+rl 255 1
+
+// DESTRUCTION TESTS
+
+// TEST 26: Child Destruction
+in
+cr 1
+cr 1
+de 2
+to
+
+// TEST 27: Current process doesnt own child
+in
+cr 1
+cr 1
+to
+cr 1
+to
+de 3
+
+// TEST 28: Destroying child destroys decendents
+in
+cr 1
+cr 1
+to
+cr 1
+to
+to
+to
+to
+de 2
+to
+
+// TEST 29: Destroy process 0 (self)
+in
+de 0
+
+// TEST 30: Destroy with resources
+in
+cr 1
+rq 0 1
+cr 2
+rq 3 3
+cr 2
+to
+rq 3 1
+rq 0 1
+de 2
+rq 3 3
+
+// TEST 31: Reallocation of PCB slots
+in
+cr 1
+cr 1
+to
+to
+de 2
+to
+cr 1
+to

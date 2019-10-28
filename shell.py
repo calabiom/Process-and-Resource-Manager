@@ -39,10 +39,11 @@ def shell():
     
     manager.sayHi()
 
-    f = open("test2.txt", "r")
+    f = open("test1.txt", "r")
 
     fl = f.readlines()
     for command in fl:
+        
         print(command)
         #print()
         #command = input()
@@ -70,7 +71,7 @@ def shell():
         ## print(split_command[1:])
 
         if main_command == "in":
-            manager.initialize()
+            index = manager.initialize()
         
         if main_command == "cr":
             priority = split_command[1:]
@@ -109,7 +110,7 @@ def shell():
 
         ## write index to output file
         
-        #print(index)
+        print("write this to output file: ", index)
         
 
 
@@ -122,6 +123,8 @@ def _is_command_valid(cmd_as_input):
     '''Verify if command is acceptable and if the arguments are the right # and type'''
 
     split_cmd_list = cmd_as_input.split()
+
+    if not split_cmd_list: return (False, "Empty")
 
     command = split_cmd_list[0]
     parameters = split_cmd_list[1:]

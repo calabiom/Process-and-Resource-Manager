@@ -14,25 +14,15 @@ class Manager():
         self.RCB = [None] * 4       ## List of tuple objects (Resource, units)
         self.ready_list = deque()
 
-        ## When we extend the manager features, self.ready_list will be
-        ## dict of lists/queue of prioritized processes (k: Priority #, v: list)
-        
+        self.rl ={0: deque(), 1: deque(), 2: deque()}
         self.active_processes = 0  ## to cache how many process are there
 
-        ## Head of the list of ready processes is always the running process!
+        self.run_proc = None
 
-        ## Create first Process 0
-        self.PCB[0] = Process(0, 1, 0)  ## Process(id/index, state, parent)
-
-        self.active_processes += 1
-
-        self.ready_list.append(self.PCB[0].id)
-        self.run_proc = self.PCB[self.ready_list[0]]
-        #print(self.run_proc)
+        ## When we extend the manager features, self.ready_list will be
+        ## dict of lists/queue of prioritized processes (k: Priority #, v: Deque)
         
-
-        ## execute for loop of loading up resources
-        ## and put Process 0 into ready
+        ## Head of the list of ready processes is always the running process!
         
     ## When it comes to deletion of process in the PCB, simple remove the value
     ## at that index and mark it as None. Then when creating a process, add that
@@ -40,26 +30,26 @@ class Manager():
 
         
     def initialize(self):
-        '''Restore system to its initial state'''
+        '''Restore system to its initial state and create Process 0'''
         self.PCB = [None] * 16
         self.RCB = [None] * 4
-        self.ready_list = deque()
-        ###self.waiting_list = [] #don't need this
-        
+        self.ready_list = deque() 
+        self.rl = {0: deque(), 1: deque(), 2: deque()} #### WHERE YOU LAST LEFT OFF 10.28.19 5:20 AM
+
+        ## Creating Process 0 and placing it into Ready List
         self.PCB[0] = Process(0, 1, 0)  ## Process(id/index, state, parent)
 
         self.active_processes += 1
 
         self.ready_list.append(self.PCB[0].id)
         self.run_proc = self.PCB[self.ready_list[0]]
-        #print(self.run_proc)
-        #print("Manager: I have started over, basically")
 
-        self.RCB[0] = Resource(0, 0, 1)
-        self.RCB[1] = Resource(1, 0, 1)
-        self.RCB[2] = Resource(2, 0, 2)
-        self.RCB[3] = Resource(3, 0, 3)
-        return True
+        ## Set up all Resources
+        self.RCB[0] = Resource(0, 1, 0)
+        self.RCB[1] = Resource(1, 1, 0)
+        self.RCB[2] = Resource(2, 2, 0)
+        self.RCB[3] = Resource(3, 3, 0)
+        return 0
 
     def create(self, priority): ## Priority to be used later
         '''Creates a new process for the current Process by invoking Process.create()
@@ -192,6 +182,13 @@ class Manager():
 #################################
 
     def request(self, resource, units):
+        if resource not in [0, 1, 2, 3]: return -1
+
+        if self.run_proc.id == self.PCB[0].id: return -1 ## Process 0 can't req res.
+
+        ## if the current process holds ALL the units of a resource they're
+        ## requesting, then return -1 ----> TB IMPLEMENTED LATER
+        
         if self.RCB[resource].state == 0:   ## if resource is free rn... 
             self.RCB[resource].state = 1    ## RESOURCE ALLOCATED
             self.run_proc.add_resource(resource)
