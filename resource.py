@@ -9,13 +9,13 @@ from collections import deque
 
 class Resource():
 
-    def __init__(self, r_id, inventory, state):
+    def __init__(self, r_id, inventory):
         self.id = r_id
-        self.state = state
-        self.waitlist = deque()
-        ## self.inventory
+        self.state = inventory
+        self.waitlist = deque()     ## STRICTLY FIFO ORDER (NO PRIORITY)
+        self.inventory = inventory
 
-    def add_to_waitlist(self, processid):
-        self.waitlist.append(processid)
+    def add_to_waitlist(self, processid, units):
+        self.waitlist.append((processid, units))
 
         return processid

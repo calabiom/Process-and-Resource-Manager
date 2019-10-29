@@ -25,25 +25,25 @@
 ##      - to
 ##          - Invoke the function timeout().
 
-from manager import Manager
+from nmanager import NewManager
 
 VALID_COMMANDS = ["in","cr","de","rq","rl","to"]
 VALID_RESOURCES = [i for i in range(0, 4)]
     
 def shell():
 
-    manager = Manager() ## Instantiate Manager object
+    manager = NewManager() ## Instantiate Manager object
 
     ## Manager object handles their own ecosystem of processes and resources
     ## It will create processes and allocate resources accordingly
     
     manager.sayHi()
 
-    f = open("test1.txt", "r")
+    f = open("test4.txt", "r")
 
     fl = f.readlines()
     for command in fl:
-        
+    #while True:   
         print(command)
         #print()
         #command = input()
@@ -74,14 +74,14 @@ def shell():
             index = manager.initialize()
         
         if main_command == "cr":
-            priority = split_command[1:]
+            priority = int(split_command[1:][0])
             
             index = manager.create(priority)
 
         if main_command == "de":
             index_to_destroy = int(split_command[1:][0])
 
-            manager.destroy(index_to_destroy)
+            index = manager.destroy(index_to_destroy)
 
         if main_command == "rq":
             resource_to_request = int(split_command[1:][0])
@@ -89,17 +89,17 @@ def shell():
 
             #print(units)
 
-            manager.request(resource_to_request, units)
+            index = manager.request(resource_to_request, units)
 
         if main_command == "rl":
             resource_to_release = int(split_command[1:][0])
             units = int(split_command[1:][1])
 
-            manager.release(resource_to_release, units)
+            index = manager.release(resource_to_release, units)
 
         if main_command == "to":
             
-            manager.timeout()
+            index = manager.timeout()
 
         ######
         if main_command == "child":

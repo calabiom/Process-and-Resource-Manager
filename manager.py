@@ -254,6 +254,8 @@ class Manager():
 ##                #   if p = highest_proc:
 ##                #       self.RCB[resource].waitlist.re
 ##                #       break
+
+                # Priority plays no role for the resource waiting list. All processes should be handled in FIFO order.
                 
                 head_of_waitlist = self.RCB[resource].waitlist.popleft()
                 try: ## in the event that the process doesn't exist
@@ -274,10 +276,14 @@ class Manager():
         return True
 
     def timeout(self):
+        ## index_to = self.rl[self.run_proc.priority].popleft()
+        ## self.ready_list.append(index_to)
+        ## self.PCB[index_to].state = 1
+        ## self.scheduler()
         index_to_bring_to_end = self.ready_list.popleft()
         self.ready_list.append(index_to_bring_to_end)
 
-        self.PCB[index_to_bring_to_end].status = 1
+        self.PCB[index_to_bring_to_end].state = 1
 
         self.scheduler()
       
@@ -285,13 +291,13 @@ class Manager():
         return True
 
     def scheduler(self):
-        ## 
+        ##
         ## for i,p in self.rl:
         ##      if self.rl[i] not empty:
-        ##          new_proc = self.rl[i].popleft()
+        ##          new_proc = self.rl[i][0]
         ##          break
 
-        ## self.run_proc = new_proc
+        ## self.run_proc = self.PCB[new_proc]
         self.run_proc = self.PCB[self.ready_list[0]]
         print("Process {} running: ".format(self.run_proc.id))
         print(list(self.ready_list))

@@ -15,33 +15,16 @@ class Process():
         self.parent = parent        
         self.priority = priority
         self.children = []    
-        self.resources = []
-
-    def create_process(self, index, priority): ### DO NOT NEED THIS ANYMORE
-        '''Creates a new child process'''
-        new_process = Process(index, 1, self.id)
-
-        ##print("New Child process {} created from Parent process {}".format(index, self.id))
-        return new_process
-
-    def destroy(self):
-        '''Destroy child process, and recursively destroy child's descendants, etc.'''
-
-        ## for all k in children of j
-        ##      destroy(k)
-        ## remove j from list of children of i
-        ## remove j from RL or waiting list
-        ## release all resources of j
-        ## free PCB of j
-
-        #print("n processes destroyed") ## display number of processes
-        return True
+        self.resources = {} ##{} ## in (resource, allocated units)
 
     def add_child(self, index):
         self.children.append(index)
 
-    def add_resource(self, resource):
-        self.resources.append(resource)
+    def add_resource(self, resource, units):
+        if resource in self.resources:
+            self.resources[resource] += units
+        else:
+            self.resources[resource] = units
         return
     
     def __str__(self):
