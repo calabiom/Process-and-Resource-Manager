@@ -39,9 +39,11 @@ def shell():
     
     manager.sayHi()
 
-    f = open("test4.txt", "r")
+    f = open("official_test.txt", "r")
 
     fl = f.readlines()
+
+    result = []
     for command in fl:
     #while True:   
         print(command)
@@ -111,7 +113,9 @@ def shell():
         ## write index to output file
         
         print("write this to output file: ", index)
-        
+        result.append(index)
+
+    print(result)        
 
 
 ######################################################################################################

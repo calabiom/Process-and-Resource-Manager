@@ -1,0 +1,27 @@
+in
+cr 1
+cr 1
+to
+to
+rq 0 1
+to
+rq 0 1
+cr 2
+rq 0 1
+cr 2
+rq 1 1
+rq 0 1
+rq 1 1
+cr 2
+rq 0 1
+de 1
+cr 2
+cr 2
+cr 2
+cr 2
+cr 2
+to
+to
+to
+to
+to

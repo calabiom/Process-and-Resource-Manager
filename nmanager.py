@@ -32,7 +32,9 @@ class NewManager():
 
         
     def initialize(self):
-        '''Restore system to its initial state and create Process 0'''
+        ''' Restore system to its initial state and create Process 0
+            Returns process 0
+        '''
         self.PCB = [None] * 16
         self.RCB = [None] * 4
         #self.ready_list = deque() 
@@ -60,6 +62,8 @@ class NewManager():
             Responsibilities:
                 - put new Process in self.PCB
                 - append to ready list
+
+            Returns the parent process that created the new process
         '''
         if priority not in VALID_PRIORITIES:
             print("ERROR: Invalid Priority #")
@@ -85,7 +89,7 @@ class NewManager():
                 if priority > self.run_proc.priority:
                     #print("ok")
                     self.scheduler()
-                return index
+                return self.run_proc.id # index
 
             index = index + 1
 
@@ -148,12 +152,12 @@ class NewManager():
                 else:
                     break
                     
-            self.scheduler()
+            #self.scheduler()
             print("Resource {} released".format(r_index))
         try:
             #print(self.ready_list)
             #print("about to remove {}".format(index))
-            self.ready_list[self.run_proc.priority].remove(index)
+            self.ready_list[self.PCB[index].priority].remove(index)
         except:
             print("{} not in ready_list".format(index))
             
@@ -167,7 +171,9 @@ class NewManager():
         print(display_PCB)
 
         self.active_processes -= 1
-        return resources_to_release
+        
+        result = self.scheduler()
+        return result
 
         
 
@@ -185,7 +191,7 @@ class NewManager():
 
             number_before = self.active_processes
 
-            resources_to_release = self.handle_destruction(index)
+            result = self.handle_destruction(index)
 
             difference = number_before - self.active_processes
 
@@ -196,12 +202,17 @@ class NewManager():
 
         
         # print("Manager: Process killed their children, and their own children. fuck")
-        return True
+        return result
 
 #################################
 #################################
 
     def request(self, resource, units):
+        ''' Running process can request a resource with specific # of units
+
+            Returns the process that requested the resource
+            Returns -1 for any errors
+        '''
         if resource not in [0, 1, 2, 3] or units == 0:
             print("ERROR: Invalid resource referenced or requested 0 units")
             return -1
@@ -221,7 +232,7 @@ class NewManager():
             else:
                 self.run_proc.add_resource(resource, units)
                 self.RCB[resource].state -= units
-            return resource
+            return self.run_proc.id
 
         if units > self.RCB[resource].inventory:
             print("ERROR: # of units requested is beyond resource inventory")
@@ -230,7 +241,11 @@ class NewManager():
         ## If this process is requesting a resource it's NOT holding...
         ## ..and the resource is being used by (even partly) by another process
 
-        if self.RCB[resource].state < self.RCB[resource].inventory:
+        if (self.RCB[resource].state >= units):
+            self.run_proc.state = 1
+            self.RCB[resource].state -= units
+            self.run_proc.add_resource(resource, units)
+        else:
             self.run_proc.state = 0
             blocked_proc = self.ready_list[self.run_proc.priority].popleft()
             self.RCB[resource].add_to_waitlist(blocked_proc, units)
@@ -239,14 +254,9 @@ class NewManager():
             waitlist = [list(i.waitlist) for i in self.RCB]
             print("Resources waitlist: ", waitlist)
             self.scheduler()
-            #return self.run_proc.id
-            return resource
-        else:
-            self.run_proc.state = 1
-            self.RCB[resource].state -= units
-            self.run_proc.add_resource(resource, units)
-                       
-        return resource
+            return self.run_proc.id
+            #return resource
+        return self.run_proc.id
 
     def release(self, resource, units):
         if resource in self.run_proc.resources:
@@ -280,7 +290,7 @@ class NewManager():
             self.scheduler()
             print("Resource {} released".format(resource))
             self.resource_status()
-            return resource
+            return self.run_proc.id
                     
 
         return -1
@@ -334,10 +344,10 @@ class NewManager():
 ##        return True
 
     def timeout(self):
-        ## index_to = self.rl[self.run_proc.priority].popleft()
-        ## self.ready_list.append(index_to)
-        ## self.PCB[index_to].state = 1
-        ## self.scheduler()
+        ''' Running process can request a resource with specific # of units
+
+            Returns the new running process 
+        '''
         index_to_bring_to_end = self.ready_list[self.run_proc.priority].popleft()
         self.ready_list[self.run_proc.priority].append(index_to_bring_to_end)
 
@@ -346,7 +356,7 @@ class NewManager():
         self.scheduler()
       
         # print("Manager: TIME OUT")
-        return True
+        return self.run_proc.id
 
     def scheduler(self):
         ##
@@ -360,14 +370,17 @@ class NewManager():
         new_proc = None
         sorted(self.ready_list, reverse = True)
         for priority, ready_proc in self.ready_list.items():
+            print(ready_proc)
             if self.ready_list[priority]:
                 new_proc = self.ready_list[priority][0]
+                print("here with ", new_proc)
                 break
 
         self.run_proc = self.PCB[new_proc]
         
         print("Process {} running: ".format(self.run_proc.id))
         print(self.ready_list)
+        return self.run_proc.id
 
 #################################
 #################################
